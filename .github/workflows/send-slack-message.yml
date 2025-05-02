@@ -2,9 +2,6 @@ name: Send Slack Message
 
 on:
   workflow_call:
-    secrets:
-      slack_bot_token:
-        required: true
     inputs:
       repository:
         required: true
@@ -27,7 +24,6 @@ on:
       thread_ts:
         required: false
         type: string
-
     secrets:
       slack_bot_token:
         required: true
