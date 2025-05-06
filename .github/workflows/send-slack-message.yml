@@ -34,8 +34,7 @@ jobs:
     outputs:
       timestamp: ${{ steps.send.outputs.ts }}
     steps:
-
-      - name: Send Slack message
+      - name: Send Slack message with debug
         id: send
         run: |
           payload=$(jq -n \
@@ -48,6 +47,9 @@ jobs:
               thread_ts: ($thread_ts // null)
             }')
 
+          echo "Payload being sent to Slack:"
+          echo "$payload"
+
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.slack_bot_token }}" \
             -H "Content-Type: application/json" \
@@ -58,8 +60,3 @@ jobs:
 
           ts=$(echo "$response" | jq -r '.ts')
           echo "ts=$ts" >> $GITHUB_OUTPUT
-      - name: Debug payload
-        run: |
-          echo "Payload being sent to Slack:"
-          echo "$payload"
-  
