@@ -37,26 +37,41 @@ jobs:
       - name: Send Slack message with debug
         id: send
         run: |
-          payload=$(jq -n \
-            --arg channel "${{ inputs.channel }}" \
-            --arg text "${{ inputs.message }}" \
-            --arg thread_ts "${{ inputs.thread_ts }}" \
-            '{
-              channel: $channel,
-              text: $text,
-              thread_ts: ($thread_ts // null)
-            }')
-
+          echo "Raw thread_ts input: '${{ inputs.thread_ts }}'"
+      
+          if [[ -z "${{ inputs.thread_ts }}" ]]; then
+            echo "thread_ts is empty — sending as new message."
+            payload=$(jq -n \
+              --arg channel "${{ inputs.channel }}" \
+              --arg text "${{ inputs.message }}" \
+              '{
+                channel: $channel,
+                text: $text
+              }')
+          else
+            echo "thread_ts provided — sending as threaded reply."
+            payload=$(jq -n \
+              --arg channel "${{ inputs.channel }}" \
+              --arg text "${{ inputs.message }}" \
+              --arg thread_ts "${{ inputs.thread_ts }}" \
+              '{
+                channel: $channel,
+                text: $text,
+                thread_ts: $thread_ts
+              }')
+          fi
+      
           echo "Payload being sent to Slack:"
           echo "$payload"
-
+      
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.slack_bot_token }}" \
             -H "Content-Type: application/json" \
             --data "$payload" \
             https://slack.com/api/chat.postMessage)
-
+      
           echo "Slack response: $response"
-
+      
           ts=$(echo "$response" | jq -r '.ts')
           echo "ts=$ts" >> $GITHUB_OUTPUT
+    
