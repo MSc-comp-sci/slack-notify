@@ -34,6 +34,11 @@ jobs:
     outputs:
       timestamp: ${{ steps.send.outputs.ts }}
     steps:
+      - name: Debug payload
+        run: |
+          echo "Payload being sent to Slack:"
+          echo "$payload"
+
       - name: Send Slack message
         id: send
         run: |
