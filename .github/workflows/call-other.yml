@@ -35,7 +35,7 @@ jobs:
             branch: ${{ github.ref_name }}
             actor: ${{ github.actor }}
             action_name: ${{ github.workflow }}
-            commit_sha: ${{ github.sha }}`
+            commit_sha: ${{ github.sha }}
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -51,7 +51,7 @@ jobs:
             branch: ${{ github.ref_name }}
             actor: ${{ github.actor }}
             action_name: ${{ github.workflow }}
-            commit_sha: ${{ github.sha }}`
+            commit_sha: ${{ github.sha }}
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
