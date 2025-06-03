@@ -30,7 +30,8 @@ jobs:
         if: ${{ needs.deploy.outputs.deployed == 'true' }}
         uses: KomodoHQ/git-utils/.github/workflows/slack-notify.yml@main
         with:
-            message: "Staging deploy succeeded for `${{ github.repository }}`"
+            message: |
+              Staging deploy succeeded for `${{ github.repository }}`
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -41,7 +42,8 @@ jobs:
         if: ${{ needs.deploy.outputs.deployed == 'false' }}
         uses: KomodoHQ/git-utils/.github/workflows/slack-notify.yml@main
         with:
-            message: "Staging deploy failed for `${{ github.repository }}`"
+            message: |
+              Staging deploy failed for `${{ github.repository }}`
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
