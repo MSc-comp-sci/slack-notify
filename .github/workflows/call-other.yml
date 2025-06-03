@@ -7,22 +7,41 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         outputs:
-            success: ${{ steps.fake.outputs.success }}
+            deployed: ${{ steps.set-output.outputs.success }}
         steps:
             - name: fake deploy
               id: fake
               run: |
                 echo "this is a fake deploy step"
                 sleep 2
-                SUCCESS=true
-                echo "success=$SUCCESS" >> $GITHUB_OUTPUT
+            
+            - name: Set output success flag
+              id: set-output
+              run: |
+                  if [ "${{ steps.deploy-step.outcome }}" == "success" ]; then
+                  echo "success=true" >> $GITHUB_OUTPUT
+                  else
+                  echo "success=false" >> $GITHUB_OUTPUT
+                  fi
 
     notify-success:
-        if: ${{ needs.deploy.outputs.success == 'true' }}
-        needs: [deploy]
+        name: Slack Success Notification
+        needs: deploy
+        if: ${{ needs.deploy.outputs.deployed == 'true' }}
         uses: KomodoHQ/git-utils/.github/workflows/slack-notify.yml@main
         with:
-            message: "Deployment was successful for ${{ github.repository }} on branch `${{ github.ref_name }}`"
+            message: "Staging deploy succeeded for `${{ github.repository }}`"
+        secrets:
+            SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+    notify-failure:
+        name: Slack Failure Notification
+        needs: deploy
+        if: ${{ needs.deploy.outputs.deployed == 'false' }}
+        uses: KomodoHQ/git-utils/.github/workflows/slack-notify.yml@main
+        with:
+            message: "Staging deploy failed for `${{ github.repository }}`"
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
