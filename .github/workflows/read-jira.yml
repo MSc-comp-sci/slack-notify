@@ -1,0 +1,14 @@
+name: Get Jira Issues
+
+on:
+  workflow_dispatch:
+
+jobs:
+  get-jira-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Jira Issues with curl
+        run: |
+          curl -X GET "https://${{ secrets.JIRA_BASE_URL }}/rest/api/3/search?jql=project=${{ secrets.JIRA_PROJECT_KEY }}&maxResults=5" \
+            -H "Accept: application/json" \
+            -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}"
