@@ -1,0 +1,28 @@
+name: Call other repo
+
+on:
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        outputs:
+            success: ${{ steps.fake.outputs.success }}
+        steps:
+            - name: fake deploy
+              id: fake
+              run: |
+                echo "this is a fake deploy step"
+                sleep 2
+                SUCCESS=true
+                echo "success=$SUCCESS" >> $GITHUB_OUTPUT
+
+    notify-success:
+        if: ${{ needs.deploy.outputs.success == 'true' }}
+        needs: [deploy]
+        uses: KomodoHQ/git-utils/.github/workflows/slack-notify.yml@main
+        with:
+            message: "Deployment was successful for ${{ github.repository }} on branch `${{ github.ref_name }}`"
+        secrets:
+            SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+            SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
