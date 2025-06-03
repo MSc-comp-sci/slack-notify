@@ -32,6 +32,7 @@ jobs:
         with:
             message: |
               Staging deploy succeeded for `${{ github.repository }}`
+            repository: ${{ github.repository }}
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -44,6 +45,7 @@ jobs:
         with:
             message: |
               Staging deploy failed for `${{ github.repository }}`
+            repository: ${{ github.repository }}
         secrets:
             SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
             SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
