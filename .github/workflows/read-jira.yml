@@ -1,4 +1,4 @@
-name: Get Jira Issues
+name: Get Jira Issues as Table
 
 on:
   workflow_dispatch:
@@ -7,10 +7,25 @@ jobs:
   get-jira-issues:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Jira Issues and Print Summary
+      - name: Fetch and Display Jira Issues as Table
         run: |
-          echo "🔍 Fetching Jira issues..."
+          echo "| Key     | Summary                      | Status      | Assignee      | Created             | Updated             |"
+          echo "|---------|------------------------------|-------------|----------------|---------------------|---------------------|"
+
           curl -s -X GET "https://${{ secrets.JIRA_BASE_URL }}/rest/api/3/search?jql=project=${{ secrets.JIRA_PROJECT_KEY }}&maxResults=10" \
             -H "Accept: application/json" \
             -u "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}" \
-          | jq -r '.issues[] | "\(.key): \(.fields.summary)"'
+          | jq -r '
+            .issues[] |
+            [
+              .key,
+              (.fields.summary | gsub("[|\n]+"; " ") | .[0:30]),
+              .fields.status.name,
+              (.fields.assignee.displayName // "Unassigned"),
+              .fields.created,
+              .fields.updated
+            ] |
+            @tsv
+          ' | while IFS=$'\t' read -r key summary status assignee created updated; do
+            printf "| %-7s | %-30s | %-11s | %-14s | %-19s | %-19s |\n" "$key" "$summary" "$status" "$assignee" "$created" "$updated"
+          done
