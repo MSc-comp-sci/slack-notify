@@ -9,8 +9,8 @@ jobs:
         outputs:
             deployed: ${{ steps.set-output.outputs.success }}
         steps:
-            - name: fake deploy
-              id: fake
+            - name: deploy
+              id: deploy-step
               run: |
                 echo "this is a fake deploy step"
                 sleep 2
