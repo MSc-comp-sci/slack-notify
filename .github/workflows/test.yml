@@ -1,0 +1,70 @@
+name: Test workflow
+
+on:
+    workflow_call:
+        inputs:
+            repository:
+                required: true
+                type: string
+            action:
+                required: false
+                type: string
+            branch:
+                required: false
+                type: string
+            author:
+                required: false
+                type: string
+            channel:
+                required: true
+                type: string
+            message:
+                required: true
+                type: string
+            thread_ts:
+                required: false
+                type: string
+        secrets:
+            slack_bot_token:
+                required: true
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        outputs:
+            timestamp: ${{ steps.send.outputs.ts }}
+        steps:
+            - name: testing things
+              id: abc
+              run: |
+                echo "Repository: '${{ inputs.repository}}'"
+                
+                if [[ -z "${{ inputs.action }}" ]]; then
+                    echo "Action is empty"
+                else
+                    echo "Action: '${{ inputs.action }}'"
+                fi
+
+                if [[ -z "${{ inputs.branch }}" ]]; then
+                    echo "Branch is empty"
+                else
+                    echo "Branch: '${{ inputs.branch }}'"
+                fi
+
+                if [[ -z "${{ inputs.author }}" ]]; then
+                    echo "Author is empty"
+                else
+                    echo "Author: '${{ inputs.author }}'"
+                fi
+
+                echo "Channel: '${{ inputs.channel }}'"
+
+                echo "Message: '${{ inputs.message }}'"
+
+                if [[ -z "${{ inputs.thread_ts }}" ]]; then
+                    echo "thread_ts is empty"
+                else
+                    echo "thread_ts: '${{ inputs.thread_ts }}'"
+                fi
+
+                
